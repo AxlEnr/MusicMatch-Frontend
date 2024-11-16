@@ -1,71 +1,37 @@
-# Getting Started with Create React App
+## SPOTI-FRIENDS
+Aplicación web creada con React que permite la interacción social a través de listas de reproducción y música. Sigue los pasos a continuación para descargar, ejecutar y entender el proyecto.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+### Descarga del repositorio
 
-## Available Scripts
+1. Crea un directorio en tu sistema para alojar el proyecto.
 
-In the project directory, you can run:
+2. Clona el repositorio usando el siguiente comando:
+`git clone https://github.com/AxlEnr/Spoti-friends-Web.git`
 
-### `npm start`
+3. Navega al directorio clonado: `cd Spoti-friends-Web`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### Ejecucion de la aplicacion
+Para iniciar la aplicación, asegúrate de tener Node.js instalado y sigue estos pasos:
+1. Instala las dependencias necesarias: `npm install`
+2. Inicia el mode de desarrollo con el siguiente comando: `npm start`
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Esto abrirá la aplicación en tu navegador en la dirección `http://localhost:3000`
 
-### `npm test`
+- La página se recargará automáticamente con cada cambio que realices.
+- Cualquier error de lint se mostrará en la consola.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Comandos Disponibles
+`npm start`
+Inicia la aplicación en modo de desarrollo. La aplicación estará disponible en `http://localhost:3000`
 
-### `npm run build`
+`npm test`
+Lanza el ejecutor de pruebas en modo interactivo.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+`npm build`
+Genera una versión optimizada para producción en la carpeta build.
+- Los archivos serán minificados y listos para ser desplegados.
+- Incluye nombres de archivo con hashes únicos para el control de versiones.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
-# Spoti-friends-Web
+`npm run eject`
+Este comando expone la configuración interna de la aplicación. Úsalo únicamente si necesitas personalizar configuraciones como Webpack, Babel o ESLint.
+# Nota: Este es un proceso irreversible. Una vez que ejecutes `eject`, no podrás revertirlo.
