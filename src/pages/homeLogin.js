@@ -5,7 +5,6 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 
 // Variables de configuración de Spotify desde .env
@@ -67,15 +66,15 @@ export default function SignInSide() {
       >
         <Box
           sx={{
-            my: 8,
+            my: 20,
             mx: 3,
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
+            justifyContent: 'space-around'
           }}
         >
-          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-            <LockOutlinedIcon />
+          <Avatar src='/assets/logo1.png' sx={{ m: 1, bgcolor: 'secondary.main' }}>
           </Avatar>
           <Typography component="h1" variant="h5">
             Bienvenido a Spoti-Friends
@@ -87,7 +86,7 @@ export default function SignInSide() {
                 fullWidth
                 variant="contained"
                 color="success"
-                sx={{ mt: 3, mb: 2 }}
+                sx={{ mt: 4, mb: 4 }}
               >
                 Iniciar sesión con Spotify
               </Button>

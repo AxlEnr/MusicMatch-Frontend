@@ -1,13 +1,11 @@
 import './App.css';
-import SignInSide from '../src/pages/homeLogin'
+import SignInSide from './pages/homeLogin';
+import RedirectHandler from './pages/homeLogin';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <SignInSide/>
-      </header>
-    </div>
+    <SignInSide />,
+    <RedirectHandler />
   );
 }
 
