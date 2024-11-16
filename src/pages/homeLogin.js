@@ -2,23 +2,32 @@ import React from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
-import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 
+// Variables de configuración de Spotify desde .env
+const SPOTIFY_CLIENT_ID = process.env.REACT_APP_SPOTIFY_CLIENT_ID;
+const REDIRECT_URI = process.env.REACT_APP_REDIRECT_URI;
+
+
+console.log(SPOTIFY_CLIENT_ID); 
+console.log(REDIRECT_URI);  
+
+
+
+// URL de autorización de Spotify
+const SPOTIFY_AUTH_URL = `https://accounts.spotify.com/authorize?client_id=${SPOTIFY_CLIENT_ID}&response_type=code&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=user-library-read user-read-private&state=RANDOM_STATE`;
+
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
       {'Copyright © '}
-      <Link color="inherit" href="https://mui.com/">
+      <a href="https://mui.com/" style={{ color: 'inherit' }}>
         Spoti-Friends
-      </Link>{' '}
+      </a>{' '}
       {new Date().getFullYear()}
       {'.'}
     </Typography>
@@ -71,54 +80,21 @@ export default function SignInSide() {
           <Typography component="h1" variant="h5">
             Bienvenido a Spoti-Friends
           </Typography>
-          <Box component="form" noValidate sx={{ mt: 1 }}>
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              id="email"
-              label="Correo Electrónico"
-              name="email"
-              autoComplete="email"
-              autoFocus
-            />
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Contraseña"
-              type="password"
-              id="password"
-              autoComplete="current-password"
-            />
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
-            />
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              color="primary"
-              sx={{ mt: 3, mb: 2 }}
-            >
-              Iniciar Sesion
-            </Button>
-            <Grid container>
-              <Grid item xs>
-                <Link href="#" variant="body2">
-                  ¿Olvidaste tu contraseña?
-                </Link>
-              </Grid>
-              <Grid item>
-              </Grid>
-            </Grid>
-            <Box mt={5}>
-              <Copyright />
-            </Box>
+          {/* Botón de inicio de sesión con Spotify */}
+          <Box sx={{ mt: 3, width: '100%' }}>
+            <a href={SPOTIFY_AUTH_URL} style={{ textDecoration: 'none' }}>
+              <Button
+                fullWidth
+                variant="contained"
+                color="success"
+                sx={{ mt: 3, mb: 2 }}
+              >
+                Iniciar sesión con Spotify
+              </Button>
+            </a>
+          </Box>
+          <Box mt={5}>
+            <Copyright />
           </Box>
         </Box>
       </Grid>
