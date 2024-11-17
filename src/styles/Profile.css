@@ -1,0 +1,61 @@
+/* Estilo general para el contenedor principal */
+.profile-container {
+    text-align: center;
+    padding: 20px;
+  }
+  
+  /* Título principal del perfil */
+  .profile-title {
+    font-weight: bold;
+    color: #ffffff;
+  }
+  
+  /* Avatar del perfil */
+  .profile-avatar {
+    width: 150px;
+    height: 150px;
+    margin: 0 auto;
+    border-radius: 50%; /* Asegura que el avatar sea redondo */
+  }
+  
+  /* Nombre del usuario */
+  .profile-name {
+    font-size: 1.5rem;
+    margin-top: 20px;
+  }
+  
+  /* Título de las canciones */
+  .top-tracks-title {
+    font-size: 1.25rem;
+    margin-top: 20px;
+    color: #555;
+  }
+  
+  /* Estilo para la lista de canciones */
+  .top-tracks-list {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  
+  /* Estilo para cada ítem de la lista de canciones */
+  .track-item {
+    background-color: #a9a2a2;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+  }
+  
+  /* Hover para cambiar el fondo y aplicar un efecto de ampliación */
+  .track-item:hover {
+    background-color: #e0f7fa;
+    transform: scale(1.02);
+  }
+  
+  /* Estilo para el nombre de la canción */
+  .track-name {
+    font-weight: bold;
+  }
+  
+  /* Puedes añadir más estilos personalizados aquí */
+  
