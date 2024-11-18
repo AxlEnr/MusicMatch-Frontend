@@ -57,5 +57,9 @@
     font-weight: bold;
   }
   
-  /* Puedes añadir más estilos personalizados aquí */
-  
+  .socialMedia{
+    width: 30rem;
+    height: 4rem;
+    display: row;
+    margin-bottom: 1rem;
+  }
