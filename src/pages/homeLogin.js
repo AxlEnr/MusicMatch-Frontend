@@ -7,21 +7,9 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
+import { envs } from "../config/envs"; // Configuración de entorno
 
-// Variables de configuración de Spotify desde .env
-const SPOTIFY_CLIENT_ID = process.env.REACT_APP_SPOTIFY_CLIENT_ID;
-const REDIRECT_URI = process.env.REACT_APP_REDIRECT_URI;
-
-
-console.log(SPOTIFY_CLIENT_ID); 
-console.log(REDIRECT_URI);  
-
-
-
-// URL de autorización de Spotify
-//const SPOTIFY_AUTH_URL = `https://accounts.spotify.com/authorize?client_id=${SPOTIFY_CLIENT_ID}&response_type=code&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=user-library-read user-read-private&state=RANDOM_STATE`;
-
-const SPOTIFY_AUTH_URL = `https://accounts.spotify.com/authorize?client_id=${SPOTIFY_CLIENT_ID}&response_type=code&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=user-library-read user-read-private user-top-read&state=RANDOM_STATE`;
+const { API_SERVICE } = envs; // Solo necesitamos la URL del backend
 
 function Copyright() {
   return (
@@ -37,6 +25,11 @@ function Copyright() {
 }
 
 export default function SignInSide() {
+  const handleSpotifyLogin = () => {
+    // Redirige al usuario al backend para iniciar el flujo de autenticación
+    window.location.href = `${API_SERVICE}/auth/spotify/login`;
+  };
+
   return (
     <Grid container component="main" sx={{ height: '100vh' }}>
       <CssBaseline />
@@ -84,16 +77,15 @@ export default function SignInSide() {
           </Typography>
           {/* Botón de inicio de sesión con Spotify */}
           <Box sx={{ mt: 3, width: '100%' }}>
-            <a href={SPOTIFY_AUTH_URL} style={{ textDecoration: 'none' }}>
-              <Button
-                fullWidth
-                variant="contained"
-                color="success"
-                sx={{ mt: 3, mb: 2 }}
-              >
-                Iniciar sesión con Spotify
-              </Button>
-            </a>
+            <Button
+              fullWidth
+              variant="contained"
+              color="success"
+              sx={{ mt: 3, mb: 2 }}
+              onClick={handleSpotifyLogin}
+            >
+              Iniciar sesión con Spotify
+            </Button>
           </Box>
           <Box mt={5}>
             <Copyright />

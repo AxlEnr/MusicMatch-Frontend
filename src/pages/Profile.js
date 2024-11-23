@@ -25,14 +25,14 @@ function Profile() {
 
   useEffect(() => {
     const token = localStorage.getItem('spotify_access_token');
-
+  
     if (token) {
       // Obtener perfil del usuario
       const storedProfile = localStorage.getItem('spotify_user_profile');
       if (storedProfile) {
         setProfile(JSON.parse(storedProfile));
       }
-
+  
       // Obtener el Top 5 de canciones
       axios
         .get('https://api.spotify.com/v1/me/top/tracks?time_range=long_term&limit=5', {
@@ -46,7 +46,7 @@ function Profile() {
         .catch((error) => {
           console.error('Error al obtener las canciones top:', error);
         });
-
+  
       // Obtener Top 5 Artistas
       axios
         .get('https://api.spotify.com/v1/me/top/artists?time_range=long_term&limit=5', {
@@ -62,6 +62,7 @@ function Profile() {
         });
     }
   }, []);
+  
 
   if (!profile) {
     return <div>Cargando perfil...</div>;
