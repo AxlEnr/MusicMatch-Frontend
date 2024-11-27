@@ -1,27 +1,37 @@
 import '../styles/Profile.css';
 import React, { useEffect, useState } from 'react';
-import { List, ListItem, ListItemAvatar, Avatar, ListItemText, Typography, IconButton, Button, TextField, Autocomplete, Link} from '@mui/material';
+import { List, 
+  ListItem, 
+  ListItemAvatar, 
+  Avatar, 
+  ListItemText, 
+  Typography, 
+  IconButton, 
+  Button, 
+  TextField, 
+} from '@mui/material';
 import axios from 'axios';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { useNavigate } from 'react-router-dom';
+import { envs } from '../config/envs';
 
 function Profile() {
+  // Definir los estados dentro del componente
+  const [formData, setFormData] = useState({
+    username: '',
+    profileIMG: '',
+    email: '',
+    password: '',
+    descripcion: '',
+  });
+
   const [profile, setProfile] = useState(null);
   const [topTracks, setTopTracks] = useState([]);
   const [topArtists, setTopArtists] = useState([]);
   const [currentSection, setCurrentSection] = useState('tracks');
   const [currentNextStep, setCurrentNextStep] = useState('stepOne');
-  const socialNetOpts = [
-    {
-      label: "X/Twitter", value: "x"
-    },
-    {
-      label: "Facebook", value: "fb"
-    },
-    {
-      label: "Instagram", value: "x"
-    }
-  ] //PONER OPCIONALES LAS REDES SOCIALES CON AUTOCOMPLETE
+  const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem('spotify_access_token');
@@ -62,6 +72,68 @@ function Profile() {
         });
     }
   }, []);
+
+  // Maneja el cambio de los campos de texto
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+// Función para enviar los datos al backend
+const setUserInfo = async () => {
+  try {
+    // Obtener el token desde localStorage
+    const token = localStorage.getItem("spotify_access_token");
+
+    // Verificar y obtener datos del usuario desde Spotify
+    if (token) {
+      try {
+        const response = await axios.get('https://api.spotify.com/v1/me', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
+        });
+
+        // Obtener los datos relevantes del perfil de Spotify
+        const username = response.data.display_name || formData.username || "Usuario";
+        const profileImage = response.data.images[0]?.url || formData.profileIMG || "";
+
+        // Actualizar el estado de formData con los datos obtenidos
+        setFormData((prevData) => ({
+          ...prevData,
+          username,
+          profileIMG: profileImage,
+        }));
+
+        const updatedFormData = {
+          ...formData,
+          username,
+          profileIMG: profileImage,
+        };
+
+        const { API_SERVICE } = envs;
+
+        //console.log("Datos enviados al backend: ", updatedFormData);
+
+        const saveResponse = await axios.post(`${API_SERVICE}/api/profile`, 
+          updatedFormData);
+        console.log("Perfil guardado exitosamente", saveResponse.data);
+
+      } catch (error) {
+        console.error("Error al obtener los datos del usuario desde Spotify", error);
+      }
+    } else {
+      console.warn("Token de acceso no encontrado");
+    }
+  } catch (error) {
+    console.error("Error al guardar el perfil", error);
+  }
+};
+
+
   
 
   if (!profile) {
@@ -165,6 +237,20 @@ function Profile() {
           </div>
 
           <Button
+            onClick={() => {
+              navigate('/');
+          }}
+            style={{
+              backgroundColor: 'green',
+              color: 'white',
+              marginTop: '1rem',
+              padding: '8px',
+              marginLeft: '1rem'
+            }}
+          >
+            Volver al inicio
+          </Button>
+          <Button
             onClick={() => setCurrentNextStep('stepTwo')}
             style={{
               backgroundColor: 'green',
@@ -190,6 +276,51 @@ function Profile() {
             Paso 2: Información Adicional
           </Typography>
           <div>
+            <TextField
+            id="standard-multiline-static"
+            label="Email"
+            defaultValue=""
+            value={formData.email}
+            variant="standard"  className='socialMedia'
+            name="email"
+            onChange={handleInputChange} 
+            sx={{
+              '& .MuiInputLabel-root': { color: '#FFF'},
+              '& .MuiInputLabel-root.Mui-focused': { color: '#FFF' },
+              '& .MuiInputLabel-root.Mui-focused': { color: '#FFF' },
+              '& .MuiInputBase-input': {color: '#FFF'},
+            }}
+            />
+          </div>
+          <div>
+            <TextField
+            id="standard-multiline-static"
+            label="Contraseña"
+            type='password'
+            value={formData.password}
+            htmlFor="standard-adornment-password"
+            defaultValue=""
+            variant="standard"  className='socialMedia'
+            name="password"
+            onChange={handleInputChange}
+            sx={{
+              '& .MuiInputLabel-root': { color: '#FFF'},
+              '& .MuiInputLabel-root.Mui-focused': { color: '#FFF' },
+              '& .MuiInputLabel-root.Mui-focused': { color: '#FFF' },
+              '& .MuiInputBase-input': {color: '#FFF'},
+
+            }}/>
+          </div>
+          <Typography
+            style={{
+              marginBottom: '0.5rem',
+            }}
+          >
+            Las redes sociales no son obligatorias, solo coloca las que
+            consideres necesarias.
+            En las redes colocar el URL de la red social.
+          </Typography>
+          <div>
           <Typography style={{
             marginBottom: "1rem",
             fontSize:"1.5rem"
@@ -197,9 +328,12 @@ function Profile() {
           <TextField           
           id="standard-multiline-static"
           label="Descripcion"
+          value={formData.descripcion}
           multiline
           rows={4}
           variant="standard" 
+          name="descripcion"
+          onChange={handleInputChange}
           sx={{
             '& .MuiInputLabel-root': { color: '#FFF'},
             '& .MuiInputLabel-root.Mui-focused': { color: '#FFF' },
@@ -214,8 +348,11 @@ function Profile() {
             <TextField
             id="standard-multiline-static"
             label="X/Twitter"
+            value={formData.twitter}
             defaultValue=""
             variant="standard"  className='socialMedia'
+            name="twitter"
+            onChange={handleInputChange}
             sx={{
               '& .MuiInputLabel-root': { color: '#FFF'},
               '& .MuiInputLabel-root.Mui-focused': { color: '#FFF' },
@@ -228,8 +365,11 @@ function Profile() {
             <TextField
             id="standard-multiline-static"
             label="Facebook"
+            value={formData.facebook}
             defaultValue=""
             variant="standard" className='socialMedia'
+            name="facebook"
+            onChange={handleInputChange}
             sx={{
               '& .MuiInputLabel-root': { color: '#FFF'},
               '& .MuiInputLabel-root.Mui-focused': { color: '#FFF' },
@@ -241,8 +381,11 @@ function Profile() {
             <TextField
             id="standard-multiline-static"
             label="Instagram"
+            value={formData.instagram}
             defaultValue=""
             variant="standard" className='socialMedia'
+            name="instagram"
+            onChange={handleInputChange}
             sx={{
               '& .MuiInputLabel-root': { color: '#FFF'},
               '& .MuiInputLabel-root.Mui-focused': { color: '#FFF' },
@@ -264,7 +407,7 @@ function Profile() {
           >
             Volver al Paso 1
           </Button>
-          <a href='/showprofile'>
+         {/*  <a href='/showprofile'>*/}
           <Button
             style={{
               backgroundColor: 'green',
@@ -273,10 +416,13 @@ function Profile() {
               padding: '8px',
               marginLeft: '1rem'
             }}
+            onClick={() => {
+              setUserInfo();
+            }}
           >
             Guardar Perfil
           </Button>
-          </a>
+         {/** </a> */}
           </div>
         </>
       )}
