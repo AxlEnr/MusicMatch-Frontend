@@ -15,6 +15,7 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useNavigate } from 'react-router-dom';
 import { envs } from '../config/envs';
+import swal from 'sweetalert';
 
 function Profile() {
   // Definir los estados dentro del componente
@@ -45,7 +46,7 @@ function Profile() {
   
       // Obtener el Top 5 de canciones
       axios
-        .get('https://api.spotify.com/v1/me/top/tracks?time_range=long_term&limit=5', {
+        .get('https://api.spotify.com/v1/me/top/tracks?time_range=short_term&limit=5', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -59,7 +60,7 @@ function Profile() {
   
       // Obtener Top 5 Artistas
       axios
-        .get('https://api.spotify.com/v1/me/top/artists?time_range=long_term&limit=5', {
+        .get('https://api.spotify.com/v1/me/top/artists?time_range=short_term&limit=5', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -121,6 +122,14 @@ const setUserInfo = async () => {
         const saveResponse = await axios.post(`${API_SERVICE}/api/profile`, 
           updatedFormData);
         console.log("Perfil guardado exitosamente", saveResponse.data);
+        //swal("Perfil Creado");
+
+
+        swal({
+          title: "Perfil creado con exito",
+          icon: "success",
+          button: "Ok",
+        });
 
       } catch (error) {
         console.error("Error al obtener los datos del usuario desde Spotify", error);

@@ -5,9 +5,10 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
+import { TextField } from '@mui/material';
 import { envs } from "../config/envs"; // Configuración de entorno
+import "../styles/homeLogin.css";
 
 const { API_SERVICE } = envs; // Solo necesitamos la URL del backend
 
@@ -40,7 +41,7 @@ export default function SignInSide() {
         sm={4}
         md={7}
         sx={{
-          backgroundImage: 'url(/assets/bg-login.webp)',
+          backgroundImage: 'url(/assets/vinilo.jpg)',
           backgroundRepeat: 'no-repeat',
           backgroundColor: (theme) =>
             theme.palette.mode === 'light'
@@ -59,24 +60,88 @@ export default function SignInSide() {
         component={Paper}
         elevation={6}
         square
+        style={{
+          backgroundColor:"black",
+        }}
       >
+
         <Box
           sx={{
-            my: 8,
             mx: 3,
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
           }}
+          style={{
+            marginTop:"8rem"
+          }}
         >
-          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-            <LockOutlinedIcon />
-          </Avatar>
-          <Typography component="h1" variant="h5">
+          <img src='/assets/logo.png' style={{
+            width:"100px",
+           
+          }}></img>
+          <Typography component="h1" variant="h5" style={{
+            color:"white"
+          }}>
             Bienvenido a Spoti-Friends
           </Typography>
+          <div>
+          <TextField id="outlined-basic" label="Correo / Usuario" variant="outlined" sx={{
+              '& .MuiInputLabel-root': { color: '#FFF'},
+              '& .MuiInputLabel-root.Mui-focused': { color: '#FFF' },
+              '& .MuiInputLabel-root.Mui-focused': { color: '#FFF' },
+              '& .MuiInputBase-input': {color: '#FFF'},
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': {
+                  borderColor: '#FFF', 
+                },
+                '&:hover fieldset': {
+                  borderColor: '#FFF', 
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: '#FFF',
+                },
+              },
+              width:'350px',
+              maxWidth: '100%',
+              marginTop:'3rem'
+            }}/>
+          </div>
+          <div>
+          <TextField id="outlined-basic" label="Contraseña" variant="outlined" sx={{
+              '& .MuiInputLabel-root': { color: '#FFF'},
+              '& .MuiInputLabel-root.Mui-focused': { color: '#FFF' },
+              '& .MuiInputLabel-root.Mui-focused': { color: '#FFF' },
+              '& .MuiInputBase-input': {color: '#FFF'},
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': {
+                  borderColor: '#FFF', 
+                },
+                '&:hover fieldset': {
+                  borderColor: '#FFF', 
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: '#FFF',
+                },
+              },
+              width:'350px',
+              maxWidth: '100%',
+              marginTop:'3rem'
+            }}/>
+          </div>
+          <Box sx={{ mt: 3, width: '350px', maxWidth:'100%' }}>
+            <Button
+              fullWidth
+              variant="contained"
+              color="success"
+              sx={{ mt: 3 }}
+              onClick={handleSpotifyLogin}
+            >
+              Iniciar sesión
+            </Button>
+          </Box>
           {/* Botón de inicio de sesión con Spotify */}
-          <Box sx={{ mt: 3, width: '100%' }}>
+          <Box sx={{ width: '350px', maxWidth:'100%' }}>
             <Button
               fullWidth
               variant="contained"
@@ -84,7 +149,7 @@ export default function SignInSide() {
               sx={{ mt: 3, mb: 2 }}
               onClick={handleSpotifyLogin}
             >
-              Iniciar sesión con Spotify
+              Crear cuenta con Spotify
             </Button>
           </Box>
           <Box mt={5}>
