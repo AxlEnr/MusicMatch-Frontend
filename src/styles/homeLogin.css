@@ -1,0 +1,9 @@
+:root{
+    --TextField-brandBorderColor: '#FFF';
+    --TextField-brandBorderHoverColor: '#FFF';
+    --TextField-brandBorderFocusedColor: '#FFF';
+}
+
+.outline{
+    border-color: var(--TextField-brandBorderColor);
+}
