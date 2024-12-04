@@ -14,6 +14,8 @@ function Callback() {
         try {
           const { access_token, refresh_token, expires_in } = await getSpotifyToken(code);
 
+          console.log('Access Token obtenido:', access_token); // Log para depuración
+
           // Guarda tokens en localStorage
           localStorage.setItem('spotify_access_token', access_token);
           localStorage.setItem('spotify_refresh_token', refresh_token);
@@ -21,12 +23,14 @@ function Callback() {
 
           // Obtén y guarda el perfil de usuario
           const userProfile = await getSpotifyProfile(access_token);
+          console.log('Perfil de usuario:', userProfile); // Log para depuración
+
           localStorage.setItem('spotify_user_profile', JSON.stringify(userProfile));
 
           // Redirige al perfil del usuario
           navigate('/profile');
         } catch (error) {
-          console.error('Error durante el flujo de autenticación:', error);
+          console.error('Error durante el flujo de autenticación:', error.response?.data || error.message);
         }
       }
     };
@@ -36,3 +40,4 @@ function Callback() {
 }
 
 export default Callback;
+
