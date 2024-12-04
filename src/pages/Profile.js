@@ -21,10 +21,10 @@ function Profile() {
   // Definir los estados dentro del componente
   const [formData, setFormData] = useState({
     username: '',
-    profileIMG: '',
+    profileImg: '',
     email: '',
-    password: '',
-    descripcion: '',
+    userPass: '',
+    userDesc: '',
   });
 
   const [profile, setProfile] = useState(null);
@@ -46,7 +46,7 @@ function Profile() {
   
       // Obtener el Top 5 de canciones
       axios
-        .get('https://api.spotify.com/v1/me/top/tracks?time_range=short_term&limit=5', {
+        .get('https://api.spotify.com/v1/me/top/tracks?time_range=medium_term&limit=5', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -60,7 +60,7 @@ function Profile() {
   
       // Obtener Top 5 Artistas
       axios
-        .get('https://api.spotify.com/v1/me/top/artists?time_range=short_term&limit=5', {
+        .get('https://api.spotify.com/v1/me/top/artists?time_range=medium_term&limit=5', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -100,47 +100,63 @@ const setUserInfo = async () => {
 
         // Obtener los datos relevantes del perfil de Spotify
         const username = response.data.display_name || formData.username || "Usuario";
-        const profileImage = response.data.images[0]?.url || formData.profileIMG || "";
-
+        const profileImage = response.data.images[0]?.url || formData.profileImg || "";
+        
         // Actualizar el estado de formData con los datos obtenidos
         setFormData((prevData) => ({
           ...prevData,
           username,
-          profileIMG: profileImage,
+          profileImg: profileImage,
         }));
 
+        // Preparar los datos que se enviarán (sin idUsers)
         const updatedFormData = {
-          ...formData,
           username,
-          profileIMG: profileImage,
+          email: formData.email || "",  // Si el email no está definido, enviamos una cadena vacía
+          profileImg: profileImage,
+          userPass: formData.userPass || "",  // Asegurarse de que la contraseña no esté vacía
+          userDesc: formData.userDesc || "",  // Descripción también puede ser vacía
         };
 
         const { API_SERVICE } = envs;
 
-        //console.log("Datos enviados al backend: ", updatedFormData);
+        // Enviar los datos al backend
+        const saveResponse = await axios.post(`${API_SERVICE}/api/profile/save`, updatedFormData);
 
-        const saveResponse = await axios.post(`${API_SERVICE}/api/profile`, 
-          updatedFormData);
+        // Si el perfil se guardó con éxito
         console.log("Perfil guardado exitosamente", saveResponse.data);
-        //swal("Perfil Creado");
-
-
         swal({
-          title: "Perfil creado con exito",
+          title: "Perfil creado con éxito",
           icon: "success",
           button: "Ok",
         });
 
       } catch (error) {
         console.error("Error al obtener los datos del usuario desde Spotify", error);
+        swal({
+          title: "Error al obtener datos de Spotify",
+          icon: "error",
+          button: "Ok",
+        });
       }
     } else {
       console.warn("Token de acceso no encontrado");
+      swal({
+        title: "No se encontró el token de acceso",
+        icon: "error",
+        button: "Ok",
+      });
     }
   } catch (error) {
     console.error("Error al guardar el perfil", error);
+    swal({
+      title: "Error al guardar el perfil",
+      icon: "error",
+      button: "Ok",
+    });
   }
 };
+
 
 
   
@@ -306,11 +322,11 @@ const setUserInfo = async () => {
             id="standard-multiline-static"
             label="Contraseña"
             type='password'
-            value={formData.password}
+            value={formData.userPass}
             htmlFor="standard-adornment-password"
             defaultValue=""
             variant="standard"  className='socialMedia'
-            name="password"
+            name="userPass"
             onChange={handleInputChange}
             sx={{
               '& .MuiInputLabel-root': { color: '#FFF'},
@@ -337,11 +353,11 @@ const setUserInfo = async () => {
           <TextField           
           id="standard-multiline-static"
           label="Descripcion"
-          value={formData.descripcion}
+          value={formData.userDesc}
           multiline
           rows={4}
           variant="standard" 
-          name="descripcion"
+          name="userDesc"
           onChange={handleInputChange}
           sx={{
             '& .MuiInputLabel-root': { color: '#FFF'},
@@ -357,7 +373,6 @@ const setUserInfo = async () => {
             <TextField
             id="standard-multiline-static"
             label="X/Twitter"
-            value={formData.twitter}
             defaultValue=""
             variant="standard"  className='socialMedia'
             name="twitter"
@@ -374,7 +389,6 @@ const setUserInfo = async () => {
             <TextField
             id="standard-multiline-static"
             label="Facebook"
-            value={formData.facebook}
             defaultValue=""
             variant="standard" className='socialMedia'
             name="facebook"
@@ -390,7 +404,6 @@ const setUserInfo = async () => {
             <TextField
             id="standard-multiline-static"
             label="Instagram"
-            value={formData.instagram}
             defaultValue=""
             variant="standard" className='socialMedia'
             name="instagram"
