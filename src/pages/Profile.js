@@ -1,80 +1,43 @@
 import '../styles/Profile.css';
 import React, { useEffect, useState } from 'react';
-import { List, 
-  ListItem, 
-  ListItemAvatar, 
-  Avatar, 
-  ListItemText, 
-  Typography, 
-  IconButton, 
-  Button, 
-  TextField, 
+import {
+  Typography,
+  Avatar,
+  Button,
+  TextField,
 } from '@mui/material';
 import axios from 'axios';
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useNavigate } from 'react-router-dom';
 import { envs } from '../config/envs';
 import swal from 'sweetalert';
 
 function Profile() {
-  // Definir los estados dentro del componente
   const [formData, setFormData] = useState({
     username: '',
     profileImg: '',
     email: '',
     userPass: '',
     userDesc: '',
+    twitter: '',
+    facebook: '',
+    instagram: '',
+    other: '',
   });
 
   const [profile, setProfile] = useState(null);
-  const [topTracks, setTopTracks] = useState([]);
-  const [topArtists, setTopArtists] = useState([]);
-  const [currentSection, setCurrentSection] = useState('tracks');
   const [currentNextStep, setCurrentNextStep] = useState('stepOne');
   const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem('spotify_access_token');
-  
     if (token) {
-      // Obtener perfil del usuario
       const storedProfile = localStorage.getItem('spotify_user_profile');
       if (storedProfile) {
         setProfile(JSON.parse(storedProfile));
       }
-  
-      // Obtener el Top 5 de canciones
-      axios
-        .get('https://api.spotify.com/v1/me/top/tracks?time_range=short_term&limit=5', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-        .then((response) => {
-          setTopTracks(response.data.items || []);
-        })
-        .catch((error) => {
-          console.error('Error al obtener las canciones top:', error);
-        });
-  
-      // Obtener Top 5 Artistas
-      axios
-        .get('https://api.spotify.com/v1/me/top/artists?time_range=short_term&limit=5', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-        .then((response) => {
-          setTopArtists(response.data.items || []);
-        })
-        .catch((error) => {
-          console.error('Error al obtener los artistas top:', error);
-        });
     }
   }, []);
 
-  // Maneja el cambio de los campos de texto
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -83,66 +46,78 @@ function Profile() {
     }));
   };
 
-// Función para enviar los datos al backend
-const setUserInfo = async () => {
-  try {
-    const token = localStorage.getItem("spotify_access_token");
+  const setUserInfo = async () => {
+    try {
+      const token = localStorage.getItem('spotify_access_token');
+      if (!token) throw new Error('No se encontró el token de acceso.');
 
-    if (token) {
       const response = await axios.get('https://api.spotify.com/v1/me', {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      const username = response.data.display_name || formData.username || "Usuario";
-      const profileImage = response.data.images[0]?.url || formData.profileImg || "";
-
-      setFormData((prevData) => ({
-        ...prevData,
-        username,
-        profileImg: profileImage,
-      }));
+      const username = response.data.display_name || formData.username || 'Usuario';
+      const profileImage = response.data.images[0]?.url || formData.profileImg || '';
 
       const updatedFormData = {
         username,
-        email: formData.email || "",
+        email: formData.email || '',
         profileImg: profileImage,
-        userPass: formData.userPass || "",
-        userDesc: formData.userDesc || "",
+        userPass: formData.userPass || '',
+        userDesc: formData.userDesc || '',
       };
 
       const { API_SERVICE } = envs;
-
       const saveResponse = await axios.post(`${API_SERVICE}/api/profile/save`, updatedFormData);
 
-      console.log("Perfil guardado exitosamente", saveResponse.data);
+      swal({ title: 'Perfil creado con éxito', icon: 'success', button: 'Ok' });
+    } catch (error) {
+      console.error('Error al guardar el perfil:', error);
+      swal({ title: 'Error al guardar el perfil', icon: 'error', button: 'Ok' });
+    }
+  };
 
-      swal({
-        title: "Perfil creado con éxito",
-        icon: "success",
-        button: "Ok",
-      }).then(() => {
-        navigate('/principal'); // Redirige a la página principal
-      });
+  const saveSocialMedia = async () => {
+    try {
+      const { API_SERVICE } = envs;
+      if (!formData.email) throw new Error('El email no está configurado.');
+  
+      // Obtener perfil a partir del email
+      const response = await axios.get(`${API_SERVICE}/api/profile/getProfileByEmail/${formData.email}`);
+      const userProfile = response.data.data;
+  
+      if (!userProfile || !userProfile.idUsers) {
+        throw new Error('No se encontró el perfil del usuario.');
+      }
+  
+      const userID = userProfile.idUsers;
+  
+      const socialData = {
+        twitter: formData.twitter?.toString() || "",
+        facebook: formData.facebook?.toString() || "",
+        instagram: formData.instagram?.toString() || "",
+        other: formData.other?.toString() || "",
+      };
 
-    } else {
+      await Promise.all(
+        Object.entries(socialData).map(([platformName, profileLink]) =>
+          profileLink
+            ? axios.post(`${API_SERVICE}/api/links/save`, { platformName, profileLink, userID })
+            : null
+        )
+      );
+  
+      swal({ title: 'Redes sociales guardadas con éxito', icon: 'success', button: 'Ok' });
+    } catch (error) {
+      console.error('Error al guardar las redes sociales:', error);
       swal({
-        title: "No se encontró el token de acceso",
-        icon: "error",
-        button: "Ok",
+        title: 'Error al guardar las redes sociales',
+        text: error.message || 'Ocurrió un error inesperado.',
+        icon: 'error',
+        button: 'Ok',
       });
     }
-  } catch (error) {
-    console.error("Error al guardar el perfil", error);
-    swal({
-      title: "Error al guardar el perfil",
-      icon: "error",
-      button: "Ok",
-    });
-  }
-};
-
-
-
+  };
+  
   
 
   if (!profile) {
@@ -150,7 +125,13 @@ const setUserInfo = async () => {
   }
 
   return (
-    <div className="profile-container">
+    <div className="profile-container" style={{
+      padding: "5rem",
+      margin: "2rem",
+      borderRadius:"10px",
+      border: "2px solid green"
+    }  
+    }>
       <Typography
         variant="h4"
         gutterBottom
@@ -180,69 +161,77 @@ const setUserInfo = async () => {
             style={{
               width: '150px',
               height: '150px',
+              margin: '0 auto',
             }}
           />
-          <Typography variant="h5" gutterBottom className="profile-name">
-            {profile.display_name}
-          </Typography>
-          <div className="section-name">
-            <Typography variant="h6" gutterBottom className="section-title">
-              {currentSection === 'tracks' ? 'Top 5 Canciones' : 'Top 5 Artistas'}
-            </Typography>
+
+          <div>
+          <Typography style={{
+            marginTop: "1rem",
+            fontSize:"1.5rem"
+          }}>Ingresa un usuario y una contraseña</Typography>
+            <TextField
+            id="standard-multiline-static"
+            label="Email"
+            defaultValue=""
+            value={formData.email}
+            variant="standard"  className='socialMedia'
+            name="email"
+            onChange={handleInputChange} 
+            sx={{
+              '& .MuiInputLabel-root': { color: '#FFF'},
+              '& .MuiInputLabel-root.Mui-focused': { color: '#FFF' },
+              '& .MuiInputLabel-root.Mui-focused': { color: '#FFF' },
+              '& .MuiInputBase-input': {color: '#FFF'},
+              marginTop:"2rem",
+            }}
+            />
+          </div>
+          <div>
+            <TextField
+            id="standard-multiline-static"
+            label="Contraseña"
+            type='password'
+            value={formData.userPass}
+            htmlFor="standard-adornment-password"
+            defaultValue=""
+            variant="standard"  className='socialMedia'
+            name="userPass"
+            onChange={handleInputChange}
+            sx={{
+              '& .MuiInputLabel-root': { color: '#FFF'},
+              '& .MuiInputLabel-root.Mui-focused': { color: '#FFF' },
+              '& .MuiInputLabel-root.Mui-focused': { color: '#FFF' },
+              '& .MuiInputBase-input': {color: '#FFF'},
+              marginTop:"2rem",
+              marginBottom:"2rem",
+            }}/>
           </div>
 
-          {currentSection === 'tracks' ? (
-            <List className="top-tracks-list" style={{ margin: '0 auto' }}>
-              {topTracks.map((track) => (
-                <ListItem
-                  key={track.id}
-                  button
-                  component="a"
-                  href={track.external_urls.spotify}
-                  target="_blank"
-                  className="track-item"
-                  alignItems="flex-start"
-                >
-                  <ListItemAvatar>
-                    <Avatar src={track.album.images[0]?.url} alt={track.name} />
-                  </ListItemAvatar>
-                  <ListItemText
-                    primary={<Typography variant="body1">{track.name}</Typography>}
-                    secondary={track.artists.map((artist) => artist.name).join(', ')}
-                  />
-                </ListItem>
-              ))}
-            </List>
-          ) : (
-            <List className="top-tracks-list" style={{ margin: '0 auto' }}>
-              {topArtists.map((artist) => (
-                <ListItem
-                  key={artist.id}
-                  button
-                  component="a"
-                  href={artist.external_urls.spotify}
-                  target="_blank"
-                  className="track-item"
-                  alignItems="flex-start"
-                >
-                  <ListItemText
-                    primary={<Typography variant="body1" style={{ padding: '10px' }}>{artist.name}</Typography>}
-                  />
-                </ListItem>
-              ))}
-            </List>
-          )}
-
-          <div className="section-controls">
-            <IconButton
-              onClick={() => setCurrentSection('tracks')}
-              style={{ backgroundColor: 'white', marginRight: '1rem' }}
-            >
-              <ArrowBackIcon />
-            </IconButton>
-            <IconButton onClick={() => setCurrentSection('artists')} style={{ backgroundColor: 'white' }}>
-              <ArrowForwardIcon />
-            </IconButton>
+          <div>
+          <Typography style={{
+            marginBottom: "1rem",
+            fontSize:"1.5rem"
+          }}>Agrega una descripción para tu perfil</Typography>
+          <TextField           
+          id="standard-multiline-static"
+          label="Descripcion"
+          value={formData.userDesc}
+          multiline
+          rows={4}
+          variant="standard" 
+          name="userDesc"
+          onChange={handleInputChange}
+          sx={{
+            '& .MuiInputLabel-root': { color: '#FFF'},
+            '& .MuiInputLabel-root.Mui-focused': { color: '#FFF' },
+            '& .MuiInputLabel-root.Mui-focused': { color: '#FFF' },
+            '& .MuiInputBase-input': {color: '#FFF'},
+            width: "30rem",
+            height: "4rem",
+            display: "row",
+            marginBottom: "5rem",
+          }}/>
           </div>
 
           <Button
@@ -254,13 +243,17 @@ const setUserInfo = async () => {
               color: 'white',
               marginTop: '1rem',
               padding: '8px',
-              marginLeft: '1rem'
+              marginLeft: '1rem',
+              marginRight: '1rem',
             }}
           >
             Volver al inicio
           </Button>
           <Button
-            onClick={() => setCurrentNextStep('stepTwo')}
+            onClick={async () => {
+              await setUserInfo();
+              setCurrentNextStep('stepTwo');
+            }}
             style={{
               backgroundColor: 'green',
               color: 'white',
@@ -282,44 +275,8 @@ const setUserInfo = async () => {
               marginBottom: '1rem',
             }}
           >
-            Paso 2: Información Adicional
+            Paso 2: Redes Sociales
           </Typography>
-          <div>
-            <TextField
-            id="standard-multiline-static"
-            label="Email"
-            defaultValue=""
-            value={formData.email}
-            variant="standard"  className='socialMedia'
-            name="email"
-            onChange={handleInputChange} 
-            sx={{
-              '& .MuiInputLabel-root': { color: '#FFF'},
-              '& .MuiInputLabel-root.Mui-focused': { color: '#FFF' },
-              '& .MuiInputLabel-root.Mui-focused': { color: '#FFF' },
-              '& .MuiInputBase-input': {color: '#FFF'},
-            }}
-            />
-          </div>
-          <div>
-            <TextField
-            id="standard-multiline-static"
-            label="Contraseña"
-            type='password'
-            value={formData.userPass}
-            htmlFor="standard-adornment-password"
-            defaultValue=""
-            variant="standard"  className='socialMedia'
-            name="userPass"
-            onChange={handleInputChange}
-            sx={{
-              '& .MuiInputLabel-root': { color: '#FFF'},
-              '& .MuiInputLabel-root.Mui-focused': { color: '#FFF' },
-              '& .MuiInputLabel-root.Mui-focused': { color: '#FFF' },
-              '& .MuiInputBase-input': {color: '#FFF'},
-
-            }}/>
-          </div>
           <Typography
             style={{
               marginBottom: '0.5rem',
@@ -330,29 +287,6 @@ const setUserInfo = async () => {
             En las redes colocar el URL de la red social.
           </Typography>
           <div>
-          <Typography style={{
-            marginBottom: "1rem",
-            fontSize:"1.5rem"
-          }}>Agrega una descripcion para tu perfil</Typography>
-          <TextField           
-          id="standard-multiline-static"
-          label="Descripcion"
-          value={formData.userDesc}
-          multiline
-          rows={4}
-          variant="standard" 
-          name="userDesc"
-          onChange={handleInputChange}
-          sx={{
-            '& .MuiInputLabel-root': { color: '#FFF'},
-            '& .MuiInputLabel-root.Mui-focused': { color: '#FFF' },
-            '& .MuiInputLabel-root.Mui-focused': { color: '#FFF' },
-            '& .MuiInputBase-input': {color: '#FFF'},
-            width: "30rem",
-            height: "4rem",
-            display: "row",
-            marginBottom: "5rem",
-          }}/>
           <div>
             <TextField
             id="standard-multiline-static"
@@ -400,6 +334,22 @@ const setUserInfo = async () => {
             }}/>
           </div>
 
+          <div>
+            <TextField
+            id="standard-multiline-static"
+            label="Otro"
+            defaultValue=""
+            variant="standard" className='socialMedia'
+            name="Otro"
+            onChange={handleInputChange}
+            sx={{
+              '& .MuiInputLabel-root': { color: '#FFF'},
+              '& .MuiInputLabel-root.Mui-focused': { color: '#FFF' },
+              '& .MuiInputLabel-root.Mui-focused': { color: '#FFF' },
+              '& .MuiInputBase-input': {color: '#FFF'},
+            }}/>
+          </div>
+
 
           </div>
           <Button
@@ -414,20 +364,30 @@ const setUserInfo = async () => {
             Volver al Paso 1
           </Button>
          {/*  <a href='/showprofile'>*/}
-          <Button
+         <Button
             style={{
               backgroundColor: 'green',
               color: 'white',
               marginTop: '1rem',
               padding: '8px',
-              marginLeft: '1rem'
+              marginLeft: '1rem',
             }}
             onClick={() => {
-              setUserInfo();
+              const socialData = {
+                twitter: formData.twitter?.toString() || "",
+                facebook: formData.facebook?.toString() || "",
+                instagram: formData.instagram?.toString() || "",
+                other: formData.other?.toString() || "",
+              };
+              
+
+              saveSocialMedia(socialData); // Guardar redes sociales
             }}
           >
             Guardar Perfil
           </Button>
+
+
          {/** </a> */}
           </div>
         </>
