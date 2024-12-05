@@ -46,7 +46,7 @@ function Profile() {
   
       // Obtener el Top 5 de canciones
       axios
-        .get('https://api.spotify.com/v1/me/top/tracks?time_range=medium_term&limit=5', {
+        .get('https://api.spotify.com/v1/me/top/tracks?time_range=short_term&limit=5', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -60,7 +60,7 @@ function Profile() {
   
       // Obtener Top 5 Artistas
       axios
-        .get('https://api.spotify.com/v1/me/top/artists?time_range=medium_term&limit=5', {
+        .get('https://api.spotify.com/v1/me/top/artists?time_range=short_term&limit=5', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -86,61 +86,45 @@ function Profile() {
 // Función para enviar los datos al backend
 const setUserInfo = async () => {
   try {
-    // Obtener el token desde localStorage
     const token = localStorage.getItem("spotify_access_token");
 
-    // Verificar y obtener datos del usuario desde Spotify
     if (token) {
-      try {
-        const response = await axios.get('https://api.spotify.com/v1/me', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          }
-        });
+      const response = await axios.get('https://api.spotify.com/v1/me', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-        // Obtener los datos relevantes del perfil de Spotify
-        const username = response.data.display_name || formData.username || "Usuario";
-        const profileImage = response.data.images[0]?.url || formData.profileImg || "";
-        
-        // Actualizar el estado de formData con los datos obtenidos
-        setFormData((prevData) => ({
-          ...prevData,
-          username,
-          profileImg: profileImage,
-        }));
+      const username = response.data.display_name || formData.username || "Usuario";
+      const profileImage = response.data.images[0]?.url || formData.profileImg || "";
 
-        // Preparar los datos que se enviarán (sin idUsers)
-        const updatedFormData = {
-          username,
-          email: formData.email || "",  // Si el email no está definido, enviamos una cadena vacía
-          profileImg: profileImage,
-          userPass: formData.userPass || "",  // Asegurarse de que la contraseña no esté vacía
-          userDesc: formData.userDesc || "",  // Descripción también puede ser vacía
-        };
+      setFormData((prevData) => ({
+        ...prevData,
+        username,
+        profileImg: profileImage,
+      }));
 
-        const { API_SERVICE } = envs;
+      const updatedFormData = {
+        username,
+        email: formData.email || "",
+        profileImg: profileImage,
+        userPass: formData.userPass || "",
+        userDesc: formData.userDesc || "",
+      };
 
-        // Enviar los datos al backend
-        const saveResponse = await axios.post(`${API_SERVICE}/api/profile/save`, updatedFormData);
+      const { API_SERVICE } = envs;
 
-        // Si el perfil se guardó con éxito
-        console.log("Perfil guardado exitosamente", saveResponse.data);
-        swal({
-          title: "Perfil creado con éxito",
-          icon: "success",
-          button: "Ok",
-        });
+      const saveResponse = await axios.post(`${API_SERVICE}/api/profile/save`, updatedFormData);
 
-      } catch (error) {
-        console.error("Error al obtener los datos del usuario desde Spotify", error);
-        swal({
-          title: "Error al obtener datos de Spotify",
-          icon: "error",
-          button: "Ok",
-        });
-      }
+      console.log("Perfil guardado exitosamente", saveResponse.data);
+
+      swal({
+        title: "Perfil creado con éxito",
+        icon: "success",
+        button: "Ok",
+      }).then(() => {
+        navigate('/principal'); // Redirige a la página principal
+      });
+
     } else {
-      console.warn("Token de acceso no encontrado");
       swal({
         title: "No se encontró el token de acceso",
         icon: "error",
