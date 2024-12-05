@@ -1,0 +1,47 @@
+/* Estilo para el contenedor principal */
+.principal-container {
+    padding: 20px;
+    background-color: #555;
+    font-family: 'Arial', sans-serif;
+    align-items: center;
+  }
+  
+  /* Estilo para el título */
+  .principal-title {
+    align-content: center;
+    color: #ffffff;
+    font-size: 28px;
+    margin-bottom: 20px;
+  }
+
+
+  
+  /* Avatar del perfil */
+  .profile-avatar {
+    width: 100px;
+    height: 100px;
+    margin-right: 10px;
+    border: 2px solid #029e02;
+  }
+  
+  /* Lista de Canciones, Artistas, etc. */
+  .list-container {
+    margin-top: 20px;
+    background-color: white;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .list-item {
+    margin-bottom: 10px;
+  }
+  
+  .notification-icon {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    color: #3f51b5;
+    cursor: pointer;
+  }
+  

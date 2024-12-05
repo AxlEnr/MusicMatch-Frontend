@@ -1,10 +1,10 @@
 import './App.css';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'; // Importa React Router
-import SignInSide from '../src/pages/homeLogin';  // Página de login
-import Profile from './pages/Profile';  // Página de creacion perfil del usuario
-import Showprofile from './pages/Showprofile'; // Pagina del perfil del usuario
-import Callback from './pages/callback'
-
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import SignInSide from '../src/pages/homeLogin';
+import Profile from './pages/Profile';
+import Showprofile from './pages/Showprofile';
+import Callback from './pages/callback';
+import Principal from './pages/principal';  // Importación añadida
 
 function App() {
   return (
@@ -12,14 +12,11 @@ function App() {
       <div className="App">
         <header className="App-header">
           <Routes>
-            {/* Ruta para la página de login */}
             <Route path="" element={<SignInSide />} />
-            {/* Ruta para la página de Callback (Spotify redirige aquí después del login) */}
             <Route path="/callback" element={<Callback />} />
-            {/* Ruta para mostrar el perfil del usuario después de logearse */}
             <Route path="/profile" element={<Profile />} />
-
             <Route path="/showprofile" element={<Showprofile />} />
+            <Route path="/principal" element={<Principal />} />  {/* Nueva ruta */}
           </Routes>
         </header>
       </div>

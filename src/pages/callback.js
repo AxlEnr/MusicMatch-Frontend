@@ -14,8 +14,6 @@ function Callback() {
         try {
           const { access_token, refresh_token, expires_in } = await getSpotifyToken(code);
 
-          console.log('Access Token obtenido:', access_token); // Log para depuración
-
           // Guarda tokens en localStorage
           localStorage.setItem('spotify_access_token', access_token);
           localStorage.setItem('spotify_refresh_token', refresh_token);
@@ -23,7 +21,6 @@ function Callback() {
 
           // Obtén y guarda el perfil de usuario
           const userProfile = await getSpotifyProfile(access_token);
-          console.log('Perfil de usuario:', userProfile); // Log para depuración
 
           localStorage.setItem('spotify_user_profile', JSON.stringify(userProfile));
 
