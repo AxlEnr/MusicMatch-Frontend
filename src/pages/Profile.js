@@ -88,7 +88,7 @@ function Profile() {
       const { API_SERVICE } = envs;
       const saveResponse = await axios.post(`${API_SERVICE}/api/profile/save`, updatedFormData);
 
-      swal({ title: 'Perfil creado con éxito', icon: 'success', button: 'Ok' });
+      
     } catch (error) {
       console.error('Error al guardar el perfil:', error);
       swal({ title: 'Error al guardar el perfil', icon: 'error', button: 'Ok' });
@@ -116,7 +116,7 @@ function Profile() {
         instagram: formData.instagram?.toString() || "",
         other: formData.other?.toString() || "",
       };
-
+  
       await Promise.all(
         Object.entries(socialData).map(([platformName, profileLink]) =>
           profileLink
@@ -125,7 +125,14 @@ function Profile() {
         )
       );
   
-      swal({ title: 'Redes sociales guardadas con éxito', icon: 'success', button: 'Ok' });
+      swal({
+        title: 'Redes sociales guardadas con éxito',
+        icon: 'success',
+        button: 'Ok',
+      }).then(() => {
+        navigate('/principal'); // Redirigir a la página deseada
+      });
+  
     } catch (error) {
       console.error('Error al guardar las redes sociales:', error);
       swal({
@@ -144,7 +151,7 @@ function Profile() {
   
       // Obtener artistas favoritos del usuario desde Spotify
       const topArtistsResponse = await axios.get(
-        'https://api.spotify.com/v1/me/top/artists?limit=5',
+        'https://api.spotify.com/v1/me/top/artists?limit=10',
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -155,7 +162,7 @@ function Profile() {
   
       // Obtener canciones favoritas del usuario desde Spotify
       const topTracksResponse = await axios.get(
-        'https://api.spotify.com/v1/me/top/tracks?limit=5',
+        'https://api.spotify.com/v1/me/top/tracks?limit=10',
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -180,7 +187,7 @@ function Profile() {
         )
       );
   
-      swal({ title: 'Música y artistas guardados con éxito', icon: 'success', button: 'Ok' });
+      
     } catch (error) {
       console.error('Error al guardar música y artistas:', error);
       swal({
@@ -208,7 +215,7 @@ function Profile() {
         await axios.post(`${API_SERVICE}/api/playlist/save`, playlistData);
       }
   
-      swal({ title: 'Playlists guardadas con éxito', icon: 'success', button: 'Ok' });
+      
     } catch (error) {
       console.error('Error al guardar playlists:', error);
       swal({
@@ -225,6 +232,7 @@ function Profile() {
   if (!profile) {
     return <div>Cargando perfil...</div>;
   }
+
 
   return (
     <div className="profile-container" style={{
@@ -254,7 +262,7 @@ function Profile() {
               marginBottom: '1rem',
             }}
           >
-            Paso 1: Estadísticas
+            
           </Typography>
           <Avatar
             src={profile.images[0]?.url}
@@ -480,12 +488,14 @@ function Profile() {
                 facebook: formData.facebook?.toString() || "",
                 instagram: formData.instagram?.toString() || "",
                 other: formData.other?.toString() || "",
-              };
-              
 
+                
+              };
               await saveSocialMedia(socialData);
               await saveUserMusicAndArtists();
               await savePlaylists();
+
+              
             }}
           >
             Guardar Perfil

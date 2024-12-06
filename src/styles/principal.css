@@ -1,47 +1,107 @@
-/* Estilo para el contenedor principal */
-.principal-container {
-    padding: 20px;
-    background-color: #555;
-    font-family: 'Arial', sans-serif;
-    align-items: center;
-  }
-  
-  /* Estilo para el título */
-  .principal-title {
-    align-content: center;
-    color: #ffffff;
-    font-size: 28px;
-    margin-bottom: 20px;
-  }
+.profile-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 20px auto;
+  background: #ffffff; /* Fondo blanco */
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  max-width: 800px;
+}
+
+.profile-avatar-section {
+  flex-shrink: 0;
+  margin-right: 20px;
+}
+
+.profile-avatar {
+  border: 3px solid #4caf50; /* Bordes verdes */
+  border-radius: 50%;
+}
+
+.profile-details {
+  flex-grow: 1;
+  text-align: left;
+}
+
+.profile-name {
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #333; /* Negro para mejor contraste */
+}
+
+.profile-username {
+  font-size: 1rem;
+  color: #6c757d; /* Gris claro */
+  margin-bottom: 15px;
+}
+
+.social-links {
+  display: flex;
+  gap: 15px;
+}
+
+.social-icon img {
+  width: 40px;
+  height: 40px;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.social-icon img:hover {
+  transform: scale(1.1);
+  opacity: 0.8;
+}
+
+.notification-section {
+  flex-shrink: 0;
+}
+
+.notification-icon {
+  color: #4caf50; /* Verde */
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.notification-icon:hover {
+  transform: scale(1.1);
+  color: #388e3c; /* Verde más oscuro */
+}
+
+.item-box {
+  display: flex;
+  align-items: center;
+  background-color: #f9f9f9;
+  margin-bottom: 15px;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  text-decoration: none;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.item-box:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.item-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
+  margin-right: 15px;
+}
+
+.item-text {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+}
+
+.item-subtext {
+  font-size: 14px;
+  color: #414141;
+}
 
 
-  
-  /* Avatar del perfil */
-  .profile-avatar {
-    width: 100px;
-    height: 100px;
-    margin-right: 10px;
-    border: 2px solid #029e02;
-  }
-  
-  /* Lista de Canciones, Artistas, etc. */
-  .list-container {
-    margin-top: 20px;
-    background-color: white;
-    padding: 10px;
-    border-radius: 8px;
-    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-  }
-  
-  .list-item {
-    margin-bottom: 10px;
-  }
-  
-  .notification-icon {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    color: #3f51b5;
-    cursor: pointer;
-  }
-  
