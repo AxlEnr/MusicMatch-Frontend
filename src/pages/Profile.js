@@ -85,6 +85,7 @@ function Profile() {
       // Guardar email en localStorage
       localStorage.setItem('spotify_user_email', updatedFormData.email);
       swal({ title: 'Perfil creado con éxito', icon: 'success', button: 'Ok' });
+
     } catch (error) {
       console.error('Error al guardar el perfil:', error);
       swal({ title: 'Error al guardar el perfil', icon: 'error', button: 'Ok' });
@@ -229,7 +230,7 @@ console.log('Payload enviado:', userMusicPreferencesPayload);
         instagram: formData.instagram?.toString() || "",
         other: formData.other?.toString() || "",
       };
-
+  
       await Promise.all(
         Object.entries(socialData).map(([platformName, profileLink]) =>
           profileLink
@@ -238,7 +239,14 @@ console.log('Payload enviado:', userMusicPreferencesPayload);
         )
       );
   
-      swal({ title: 'Redes sociales guardadas con éxito', icon: 'success', button: 'Ok' });
+      swal({
+        title: 'Redes sociales guardadas con éxito',
+        icon: 'success',
+        button: 'Ok',
+      }).then(() => {
+        navigate('/principal'); // Redirigir a la página deseada
+      });
+  
     } catch (error) {
       console.error('Error al guardar las redes sociales:', error);
       swal({
@@ -293,7 +301,7 @@ console.log('Payload enviado:', userMusicPreferencesPayload);
         )
       );
   
-      swal({ title: 'Música y artistas guardados con éxito', icon: 'success', button: 'Ok' });
+      
     } catch (error) {
       console.error('Error al guardar música y artistas:', error);
       swal({
@@ -321,7 +329,7 @@ console.log('Payload enviado:', userMusicPreferencesPayload);
         await axios.post(`${API_SERVICE}/api/playlist/save`, playlistData);
       }
   
-      swal({ title: 'Playlists guardadas con éxito', icon: 'success', button: 'Ok' });
+      
     } catch (error) {
       console.error('Error al guardar playlists:', error);
       swal({
@@ -368,7 +376,7 @@ console.log('Payload enviado:', userMusicPreferencesPayload);
               marginBottom: '1rem',
             }}
           >
-            Paso 1: Estadísticas
+            
           </Typography>
           <Avatar
             src={profile.images[0]?.url}
@@ -594,9 +602,9 @@ console.log('Payload enviado:', userMusicPreferencesPayload);
                 facebook: formData.facebook?.toString() || "",
                 instagram: formData.instagram?.toString() || "",
                 other: formData.other?.toString() || "",
-              };
-              
 
+                
+              };
               await saveSocialMedia(socialData);
               await saveUserMusicAndArtists();
               await savePlaylists();

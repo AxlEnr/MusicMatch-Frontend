@@ -18,7 +18,6 @@ function Principal() {
     const token = localStorage.getItem('spotify_access_token');
 
     if (token) {
-      // Obtener perfil del usuario
       axios
         .get('https://api.spotify.com/v1/me', {
           headers: { Authorization: `Bearer ${token}` },
@@ -26,7 +25,6 @@ function Principal() {
         .then((response) => setProfile(response.data))
         .catch((error) => console.error('Error al obtener perfil:', error));
 
-      // Obtener canciones favoritas
       axios
         .get('https://api.spotify.com/v1/me/top/tracks?time_range=short_term&limit=10', {
           headers: { Authorization: `Bearer ${token}` },
@@ -34,7 +32,6 @@ function Principal() {
         .then((response) => setTopTracks(response.data.items || []))
         .catch((error) => console.error('Error al obtener canciones favoritas:', error));
 
-      // Obtener artistas favoritos
       axios
         .get('https://api.spotify.com/v1/me/top/artists?time_range=short_term&limit=10', {
           headers: { Authorization: `Bearer ${token}` },
@@ -42,7 +39,6 @@ function Principal() {
         .then((response) => setTopArtists(response.data.items || []))
         .catch((error) => console.error('Error al obtener artistas favoritos:', error));
 
-      // Obtener álbumes reproducidos recientemente
       axios
         .get('https://api.spotify.com/v1/me/albums?limit=5', {
           headers: { Authorization: `Bearer ${token}` },
@@ -50,7 +46,6 @@ function Principal() {
         .then((response) => setRecentAlbums(response.data.items || []))
         .catch((error) => console.error('Error al obtener álbumes:', error));
 
-      // Obtener listas de reproducción del usuario
       axios
         .get('https://api.spotify.com/v1/me/playlists?limit=5', {
           headers: { Authorization: `Bearer ${token}` },
@@ -58,7 +53,7 @@ function Principal() {
         .then((response) => setPlaylists(response.data.items || []))
         .catch((error) => console.error('Error al obtener playlists:', error));
     } else {
-      navigate('/login'); // Redirigir si no hay token
+      navigate('/login');
     }
   }, [navigate]);
 
@@ -89,59 +84,103 @@ function Principal() {
             <NotificationsIcon />
           </Badge>
         </IconButton>
+      {profile && (
+  <div className="profile-header">
+    {/* Foto de perfil */}
+    <div className="profile-avatar-section">
+      <Avatar
+        src={profile.images?.[0]?.url}
+        alt={profile.display_name}
+        className="profile-avatar"
+        sx={{ width: 150, height: 150 }}
+      />
+    </div>
+    {/* Nombre, usuario y redes sociales */}
+    <div className="profile-details">
+      <Typography variant="h4" className="profile-name">
+        {profile.display_name}
+      </Typography>
+      <Typography variant="subtitle1" className="profile-username">
+        
+      </Typography>
+      <div className="social-links">
+        <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="social-icon">
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png"
+            alt="Instagram"
+          />
+        </a>
+        <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="social-icon">
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg"
+            alt="Facebook"
+          />
+        </a>
+        <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="social-icon">
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/X_logo_2023.svg/300px-X_logo_2023.svg.png"
+            alt="Twitter"
+          />
+        </a>
       </div>
+    </div>
+    {/* Icono de notificaciones */}
+    <div className="notification-section">
+      <IconButton className="notification-icon">
+        <Badge badgeContent={3} color="error">
+          <NotificationsIcon sx={{ fontSize: 32 }} />
+        </Badge>
+      </IconButton>
+    </div>
+  </div>
+)}
+  
+</div>
 
-      <Divider sx={{ margin: '20px 0' }} />
-      <Typography variant="h5">Tus Canciones Favoritas</Typography>
-      <List className="list-container">
-        {topTracks.map((track) => (
-          <ListItem key={track.id} button component="a" href={track.external_urls.spotify} target="_blank">
-            <ListItemAvatar>
-              <Avatar src={track.album.images[0]?.url} alt={track.name} />
-            </ListItemAvatar>
-            <ListItemText primary={track.name} secondary={track.artists.map((artist) => artist.name).join(', ')} />
-          </ListItem>
-        ))}
-      </List>
+      {[
+        { title: 'Tus Canciones Favoritas', items: topTracks, type: 'track' },
+        { title: 'Tus Artistas Favoritos', items: topArtists, type: 'artist' },
+        { title: 'Álbumes Recientes', items: recentAlbums.map(({ album }) => album), type: 'album' },
+        { title: 'Tus Playlists Públicas', items: playlists, type: 'playlist' },
+      ].map((section) => (
+        <React.Fragment key={section.title}>
+          <Divider sx={{ margin: '20px 0' }} />
+          <Typography variant="h5">{section.title}</Typography>
+          <List className="list-container">
+            {section.items.map((item) => (
+              <ListItem
+                key={item.id}
+                button
+                component="a"
+                href={item.external_urls.spotify}
+                target="_blank"
+                className="item-box"
+              >
+                <ListItemAvatar>
+                <img
+                  src={
+                    section.type === 'track'
+                      ? item.album?.images?.[0]?.url // Obtiene la imagen del álbum de la canción
+                      : item.images?.[0]?.url // Para artistas, álbumes o playlists
+                  }
+                  alt={item.name || item.title}
+                  className="item-avatar"
+                />
 
-      <Divider sx={{ margin: '20px 0' }} />
-      <Typography variant="h5">Tus Artistas Favoritos</Typography>
-      <List className="list-container">
-        {topArtists.map((artist) => (
-          <ListItem key={artist.id} button component="a" href={artist.external_urls.spotify} target="_blank">
-            <ListItemAvatar>
-              <Avatar src={artist.images[0]?.url} alt={artist.name} />
-            </ListItemAvatar>
-            <ListItemText primary={artist.name} />
-          </ListItem>
-        ))}
-      </List>
-
-      <Divider sx={{ margin: '20px 0' }} />
-      <Typography variant="h5">Álbumes Recientes</Typography>
-      <List className="list-container">
-        {recentAlbums.map(({ album }) => (
-          <ListItem key={album.id} button component="a" href={album.external_urls.spotify} target="_blank">
-            <ListItemAvatar>
-              <Avatar src={album.images[0]?.url} alt={album.name} />
-            </ListItemAvatar>
-            <ListItemText primary={album.name} secondary={`Por ${album.artists.map((a) => a.name).join(', ')}`} />
-          </ListItem>
-        ))}
-      </List>
-
-      <Divider sx={{ margin: '20px 0' }} />
-      <Typography variant="h5">Tus Playlists</Typography>
-      <List className="list-container">
-        {playlists.map((playlist) => (
-          <ListItem key={playlist.id} button component="a" href={playlist.external_urls.spotify} target="_blank">
-            <ListItemAvatar>
-              <Avatar src={playlist.images[0]?.url} alt={playlist.name} />
-            </ListItemAvatar>
-            <ListItemText primary={playlist.name} />
-          </ListItem>
-        ))}
-      </List>
+                </ListItemAvatar>
+                <ListItemText
+                  primary={<span className="item-text">{item.name || item.title}</span>}
+                  secondary={section.type === 'track' || section.type === 'album' ? (
+                    <span className="item-subtext">
+                      {item.artists?.map((artist) => artist.name).join(', ')}
+                    </span>
+                  ) : null}
+                />
+              </ListItem>
+            ))}
+          </List>
+        </React.Fragment>
+      ))}
     </div>
   );
 }
