@@ -8,13 +8,14 @@ import Typography from '@mui/material/Typography';
 import { TextField } from '@mui/material';
 import { envs } from "../config/envs"; // Configuración de entorno
 import "../styles/homeLogin.css";
+import { useNavigate } from 'react-router-dom';
 
 const { API_SERVICE } = envs; // Solo necesitamos la URL del backend
 
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
-      {'Copyright © '}
+      {'Copyright © ' }
       <a href="https://mui.com/" style={{ color: 'inherit' }}>
         Spoti-Friends
       </a>{' '}
@@ -25,6 +26,7 @@ function Copyright() {
 }
 
 export default function SignInSide() {
+  const navigate = useNavigate(); // Mueve esto dentro del componente
   const handleSpotifyLogin = () => {
     // Redirige al usuario al backend para iniciar el flujo de autenticación
     window.location.href = `${API_SERVICE}/auth/spotify/login`;
@@ -77,7 +79,6 @@ export default function SignInSide() {
         >
           <img src='/assets/logo.png' style={{
             width:"100px",
-           
           }}></img>
           <Typography component="h1" variant="h5" style={{
             color:"white"
@@ -85,48 +86,48 @@ export default function SignInSide() {
             Bienvenido a Spoti-Friends
           </Typography>
           <div>
-          <TextField id="outlined-basic" label="Correo / Usuario" variant="outlined" sx={{
-              '& .MuiInputLabel-root': { color: '#FFF'},
-              '& .MuiInputLabel-root.Mui-focused': { color: '#FFF' },
-              '& .MuiInputLabel-root.Mui-focused': { color: '#FFF' },
-              '& .MuiInputBase-input': {color: '#FFF'},
-              '& .MuiOutlinedInput-root': {
-                '& fieldset': {
-                  borderColor: '#FFF', 
+            <TextField id="outlined-basic" label="Correo / Usuario" variant="outlined" sx={{
+                '& .MuiInputLabel-root': { color: '#FFF'},
+                '& .MuiInputLabel-root.Mui-focused': { color: '#FFF' },
+                '& .MuiInputBase-input': {color: '#FFF'},
+                '& .MuiOutlinedInput-root': {
+                  '& fieldset': {
+                    borderColor: '#FFF',
+                  },
+                  '&:hover fieldset': {
+                    borderColor: '#FFF',
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: '#FFF',
+                  },
                 },
-                '&:hover fieldset': {
-                  borderColor: '#FFF', 
-                },
-                '&.Mui-focused fieldset': {
-                  borderColor: '#FFF',
-                },
-              },
-              width:'350px',
-              maxWidth: '100%',
-              marginTop:'3rem'
-            }}/>
+                width:'350px',
+                maxWidth: '100%',
+                marginTop:'3rem'
+              }}
+            />
           </div>
           <div>
-          <TextField id="outlined-basic" label="Contraseña" variant="outlined" sx={{
-              '& .MuiInputLabel-root': { color: '#FFF'},
-              '& .MuiInputLabel-root.Mui-focused': { color: '#FFF' },
-              '& .MuiInputLabel-root.Mui-focused': { color: '#FFF' },
-              '& .MuiInputBase-input': {color: '#FFF'},
-              '& .MuiOutlinedInput-root': {
-                '& fieldset': {
-                  borderColor: '#FFF', 
+            <TextField id="outlined-basic" label="Contraseña" variant="outlined" sx={{
+                '& .MuiInputLabel-root': { color: '#FFF'},
+                '& .MuiInputLabel-root.Mui-focused': { color: '#FFF' },
+                '& .MuiInputBase-input': {color: '#FFF'},
+                '& .MuiOutlinedInput-root': {
+                  '& fieldset': {
+                    borderColor: '#FFF',
+                  },
+                  '&:hover fieldset': {
+                    borderColor: '#FFF',
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: '#FFF',
+                  },
                 },
-                '&:hover fieldset': {
-                  borderColor: '#FFF', 
-                },
-                '&.Mui-focused fieldset': {
-                  borderColor: '#FFF',
-                },
-              },
-              width:'350px',
-              maxWidth: '100%',
-              marginTop:'3rem'
-            }}/>
+                width:'350px',
+                maxWidth: '100%',
+                marginTop:'3rem'
+              }}
+            />
           </div>
           <Box sx={{ mt: 3, width: '350px', maxWidth:'100%' }}>
             <Button
@@ -134,7 +135,7 @@ export default function SignInSide() {
               variant="contained"
               color="success"
               sx={{ mt: 3 }}
-              onClick={handleSpotifyLogin}
+              onClick={() => navigate('/principal')}
             >
               Iniciar sesión
             </Button>
@@ -146,7 +147,7 @@ export default function SignInSide() {
               variant="contained"
               color="success"
               sx={{ mt: 3, mb: 2 }}
-              onClick={handleSpotifyLogin}
+              onClick={handleSpotifyLogin } // Cambié la llamada a navigate para usarla correctamente
             >
               Crear cuenta con Spotify
             </Button>

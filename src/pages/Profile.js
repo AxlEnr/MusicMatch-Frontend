@@ -84,7 +84,7 @@ function Profile() {
       const saveResponse = await axios.post(`${API_SERVICE}/api/profile/save`, updatedFormData);
       // Guardar email en localStorage
       localStorage.setItem('spotify_user_email', updatedFormData.email);
-      swal({ title: 'Perfil creado con éxito', icon: 'success', button: 'Ok' });
+      
 
     } catch (error) {
       console.error('Error al guardar el perfil:', error);
@@ -240,7 +240,7 @@ console.log('Payload enviado:', userMusicPreferencesPayload);
       );
   
       swal({
-        title: 'Redes sociales guardadas con éxito',
+        title: 'Perfil creado con éxito',
         icon: 'success',
         button: 'Ok',
       }).then(() => {

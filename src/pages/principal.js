@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Typography, Avatar, List, ListItem, ListItemText, ListItemAvatar, Divider, Badge, IconButton } from '@mui/material';
+import { Typography, Avatar, List, ListItem, ListItemText, ListItemAvatar, Divider, Badge, IconButton, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -12,6 +12,7 @@ function Principal() {
   const [topArtists, setTopArtists] = useState([]);
   const [recentAlbums, setRecentAlbums] = useState([]);
   const [playlists, setPlaylists] = useState([]);
+  const [openDialog, setOpenDialog] = useState(false); // Estado para controlar la visibilidad del Dialog
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -57,85 +58,88 @@ function Principal() {
     }
   }, [navigate]);
 
+   // Función para abrir el dialogo
+   const handleDialogOpen = () => {
+    setOpenDialog(true);
+  };
+
+  // Función para cerrar el dialogo
+  const handleDialogClose = () => {
+    setOpenDialog(false);
+  };
+
   return (
+    
     <div className="principal-container">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        {profile && (
-          <>
-            <div>
-              <Typography variant="h4" className="principal-title">
-                {profile.display_name}
-              </Typography>
-              <Avatar
-            src={profile.images?.[0]?.url}
-            alt={profile.display_name}
-            className="profile-avatar"
-            sx={{ width: 150, height: 150 }} // Tamaño personalizado
-            />
-            </div>
-            <div>
-            {/* Otros componentes */}
-            <Matches /> {/* Llamas al componente */}
-            </div>
-          </>
-        )}
-        <IconButton className="notification-icon">
-          <Badge badgeContent={3} color="error">
-            <NotificationsIcon />
-          </Badge>
-        </IconButton>
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
       {profile && (
-  <div className="profile-header">
-    {/* Foto de perfil */}
-    <div className="profile-avatar-section">
-      <Avatar
-        src={profile.images?.[0]?.url}
-        alt={profile.display_name}
-        className="profile-avatar"
-        sx={{ width: 150, height: 150 }}
-      />
+        <div className="profile-header">
+          {/* Foto de perfil */}
+          <div className="profile-avatar-section">
+            <Avatar
+              src={profile.images?.[0]?.url}
+              alt={profile.display_name}
+              className="profile-avatar"
+              sx={{ width: 150, height: 150 }}
+            />
+          </div>
+
+         
+
+          {/* Nombre, usuario y redes sociales */}
+          <div className="profile-details">
+            <Typography variant="h4" className="profile-name">
+              {profile.display_name}
+            </Typography>
+            <Typography variant="subtitle1" className="profile-username">
+              
+            </Typography>
+            <div className="social-links">
+              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="social-icon">
+                <img
+                  src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png"
+                  alt="Instagram"
+                />
+              </a>
+              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="social-icon">
+                <img
+                  src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg"
+                  alt="Facebook"
+                />
+              </a>
+              <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="social-icon">
+                <img
+                  src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/X_logo_2023.svg/300px-X_logo_2023.svg.png"
+                  alt="Twitter"
+                />
+              </a>
+            </div>
+          </div>
+
+          {/* Icono de notificaciones */}
+          <div className="notification-section">
+            <IconButton className="notification-icon" onClick={handleDialogOpen}>
+              <Badge badgeContent={3} color="error">
+                <NotificationsIcon sx={{ fontSize: 32 }} />
+              </Badge>
+            </IconButton>
+          </div>
+        </div>
+      )}
+
     </div>
-    {/* Nombre, usuario y redes sociales */}
-    <div className="profile-details">
-      <Typography variant="h4" className="profile-name">
-        {profile.display_name}
-      </Typography>
-      <Typography variant="subtitle1" className="profile-username">
-        
-      </Typography>
-      <div className="social-links">
-        <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="social-icon">
-          <img
-            src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png"
-            alt="Instagram"
-          />
-        </a>
-        <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="social-icon">
-          <img
-            src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg"
-            alt="Facebook"
-          />
-        </a>
-        <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="social-icon">
-          <img
-            src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/X_logo_2023.svg/300px-X_logo_2023.svg.png"
-            alt="Twitter"
-          />
-        </a>
-      </div>
-    </div>
-    {/* Icono de notificaciones */}
-    <div className="notification-section">
-      <IconButton className="notification-icon">
-        <Badge badgeContent={3} color="error">
-          <NotificationsIcon sx={{ fontSize: 32 }} />
-        </Badge>
-      </IconButton>
-    </div>
-  </div>
-)}
-  
-</div>
+
+    {/* Dialog para mostrar las notificaciones y el componente Matches */}
+    <Dialog open={openDialog} onClose={handleDialogClose} maxWidth="sm" fullWidth>
+      <DialogTitle>Notificaciones</DialogTitle>
+      <DialogContent>
+        <Matches />
+      </DialogContent>
+      <DialogActions>
+        <button onClick={handleDialogClose}>Cerrar</button>
+      </DialogActions>
+    </Dialog>
+
 
       {[
         { title: 'Tus Canciones Favoritas', items: topTracks, type: 'track' },
