@@ -4,6 +4,7 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import '../styles/principal.css'; // Importa los estilos personalizados
+import Matches from '../components/matches';
 
 function Principal() {
   const [profile, setProfile] = useState(null);
@@ -76,6 +77,10 @@ function Principal() {
             className="profile-avatar"
             sx={{ width: 150, height: 150 }} // Tamaño personalizado
             />
+            </div>
+            <div>
+            {/* Otros componentes */}
+            <Matches /> {/* Llamas al componente */}
             </div>
           </>
         )}
