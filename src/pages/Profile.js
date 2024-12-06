@@ -37,13 +37,6 @@ function Profile() {
       if (storedProfile) {
         setProfile(JSON.parse(storedProfile));
       }
-      // Obtener álbumes reproducidos recientemente
-      axios
-        .get('https://api.spotify.com/v1/me/albums?limit=5', {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-        .then((response) => setRecentAlbums(response.data.items || []))
-        .catch((error) => console.error('Error al obtener álbumes:', error));
 
       // Obtener listas de reproducción del usuario
       axios
@@ -85,15 +78,136 @@ function Profile() {
         userDesc: formData.userDesc || '',
       };
 
+
+
       const { API_SERVICE } = envs;
       const saveResponse = await axios.post(`${API_SERVICE}/api/profile/save`, updatedFormData);
+      // Guardar email en localStorage
+      localStorage.setItem('spotify_user_email', updatedFormData.email);
+      swal({ title: 'Perfil creado con éxito', icon: 'success', button: 'Ok' });
 
-      
     } catch (error) {
       console.error('Error al guardar el perfil:', error);
       swal({ title: 'Error al guardar el perfil', icon: 'error', button: 'Ok' });
     }
   };
+
+  const savePreferences = async () => {
+    try {
+      const token = localStorage.getItem('spotify_access_token');
+      if (!token) throw new Error('No se encontró el token de acceso.');
+  
+      const { API_SERVICE } = envs;
+  
+      // Obtener los 10 artistas favoritos desde Spotify
+      const topArtistsResponse = await axios.get(
+        'https://api.spotify.com/v1/me/top/artists?limit=10',
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      const topArtists = topArtistsResponse.data.items.map((artist) => artist.name);
+  
+      // Obtener las 10 canciones favoritas desde Spotify
+      const topTracksResponse = await axios.get(
+        'https://api.spotify.com/v1/me/top/tracks?limit=10',
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      const topTracks = topTracksResponse.data.items.map((track) => ({
+        name: track.name,
+        artistName: track.artists[0]?.name || null,
+      }));
+  
+      // Obtener el userID
+      const userEmail = formData.email;
+      const userResponse = await axios.get(`${API_SERVICE}/api/profile/getProfileByEmail/${userEmail}`);
+      const userID = userResponse.data?.data?.idUsers;
+  
+      if (!userID) {
+        throw new Error('Usuario no encontrado.');
+      }
+  
+      // Buscar los artistas y canciones en la base de datos
+      const artistPromises = topArtists.map(async (artistName) => {
+        try {
+          const response = await axios.get(`${API_SERVICE}/api/artists/getArtist/${encodeURIComponent(artistName)}`);
+          return response.data?.data ? { idArtist: response.data.data.idArtist, name: artistName } : null;
+        } catch (error) {
+          console.error(`Error al buscar el artista ${artistName}:`, error.message);
+          return null;
+        }
+      });
+  
+      const songPromises = topTracks.map(async (track) => {
+        try {
+          const songResponse = await axios.get(`${API_SERVICE}/api/music/getMusic/${encodeURIComponent(track.name)}`);
+          const songData = songResponse.data?.data;
+          return songData ? { idMusic: songData.idMusic, name: track.name } : null;
+        } catch (error) {
+          console.error(`Error al buscar la canción "${track.name}":`, error.message);
+          return null;
+        }
+      });
+  
+      const foundArtists = (await Promise.all(artistPromises)).filter(Boolean);
+      const foundSongs = (await Promise.all(songPromises)).filter(Boolean);
+  
+      // Crear el payload y guardar las preferencias
+      const userMusicPreferencesPayload = foundSongs.map((song) => {
+        // Tomar el primer artista encontrado, si existe
+        const artist = foundArtists[0]; // Asignar el primer artista encontrado
+
+        // Agregar información de depuración
+        console.log(`Asignando artista "${artist?.name || 'N/A'}" a la canción "${song.name}"`);
+
+        return {
+          userID,
+          musicID: song.idMusic,
+          artistID: artist?.idArtist || null, // Asignar null si no hay artista
+        };
+      });
+
+      // Guardar todas las preferencias, sin filtrar por artistID
+      await Promise.all(
+        userMusicPreferencesPayload.map(async (preference) => {
+          try {
+            const response = await axios.post(`${API_SERVICE}/api/preferences/save`, preference);
+            console.log(response.data.message);
+          } catch (error) {
+            console.error('Error al guardar la preferencia de música:', error.message);
+          }
+        })
+      );
+
+console.log('Payload enviado:', userMusicPreferencesPayload);
+
+      console.log('Preferencias de música guardadas con éxito.');
+    } catch (error) {
+      console.error('Error al guardar las preferencias de música:', error.message);
+    }
+  };
+  
+  const createMatches = async () => {
+    try {
+      const { API_SERVICE } = envs;
+  
+      // Suponiendo que el backend tiene un endpoint para generar matches
+      const response = await axios.post(`${API_SERVICE}/api/matches/createAll`);
+      
+    } catch (error) {
+      console.error('Error al crear los matches:', error.message);
+      swal({
+        title: 'Error al crear matches',
+        text: error.message || 'Ocurrió un error inesperado.',
+        icon: 'error',
+        button: 'Ok',
+      });
+    }
+  };
+  
+  
 
   const saveSocialMedia = async () => {
     try {
@@ -494,8 +608,8 @@ function Profile() {
               await saveSocialMedia(socialData);
               await saveUserMusicAndArtists();
               await savePlaylists();
-
-              
+              await savePreferences();
+              await createMatches();
             }}
           >
             Guardar Perfil

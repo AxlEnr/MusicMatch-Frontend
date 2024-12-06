@@ -4,6 +4,7 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import '../styles/principal.css'; // Importa los estilos personalizados
+import Matches from '../components/matches';
 
 function Principal() {
   const [profile, setProfile] = useState(null);
@@ -59,6 +60,30 @@ function Principal() {
   return (
     <div className="principal-container">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        {profile && (
+          <>
+            <div>
+              <Typography variant="h4" className="principal-title">
+                {profile.display_name}
+              </Typography>
+              <Avatar
+            src={profile.images?.[0]?.url}
+            alt={profile.display_name}
+            className="profile-avatar"
+            sx={{ width: 150, height: 150 }} // Tamaño personalizado
+            />
+            </div>
+            <div>
+            {/* Otros componentes */}
+            <Matches /> {/* Llamas al componente */}
+            </div>
+          </>
+        )}
+        <IconButton className="notification-icon">
+          <Badge badgeContent={3} color="error">
+            <NotificationsIcon />
+          </Badge>
+        </IconButton>
       {profile && (
   <div className="profile-header">
     {/* Foto de perfil */}
