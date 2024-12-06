@@ -26,6 +26,8 @@ function Profile() {
 
   const [profile, setProfile] = useState(null);
   const [currentNextStep, setCurrentNextStep] = useState('stepOne');
+  const [recentAlbums, setRecentAlbums] = useState([]);
+  const [playlists, setPlaylists] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -35,6 +37,23 @@ function Profile() {
       if (storedProfile) {
         setProfile(JSON.parse(storedProfile));
       }
+      // Obtener álbumes reproducidos recientemente
+      axios
+        .get('https://api.spotify.com/v1/me/albums?limit=5', {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((response) => setRecentAlbums(response.data.items || []))
+        .catch((error) => console.error('Error al obtener álbumes:', error));
+
+      // Obtener listas de reproducción del usuario
+      axios
+        .get('https://api.spotify.com/v1/me/playlists?limit=5', {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((response) => setPlaylists(response.data.items || []))
+        .catch((error) => console.error('Error al obtener playlists:', error));
+    } else {
+      navigate('/login'); // Redirigir si no hay token
     }
   }, []);
 
@@ -111,6 +130,89 @@ function Profile() {
       console.error('Error al guardar las redes sociales:', error);
       swal({
         title: 'Error al guardar las redes sociales',
+        text: error.message || 'Ocurrió un error inesperado.',
+        icon: 'error',
+        button: 'Ok',
+      });
+    }
+  };
+  
+  const saveUserMusicAndArtists = async () => {
+    try {
+      const token = localStorage.getItem('spotify_access_token');
+      if (!token) throw new Error('No se encontró el token de acceso.');
+  
+      // Obtener artistas favoritos del usuario desde Spotify
+      const topArtistsResponse = await axios.get(
+        'https://api.spotify.com/v1/me/top/artists?limit=5',
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      const topArtists = topArtistsResponse.data.items.map((artist) => ({
+        artistName: artist.name,
+      }));
+  
+      // Obtener canciones favoritas del usuario desde Spotify
+      const topTracksResponse = await axios.get(
+        'https://api.spotify.com/v1/me/top/tracks?limit=5',
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      const topTracks = topTracksResponse.data.items.map((track) => ({
+        songName: track.name,
+      }));
+  
+      const { API_SERVICE } = envs;
+  
+      // Guardar artistas en el backend
+      await Promise.all(
+        topArtists.map((artist) =>
+          axios.post(`${API_SERVICE}/api/artists/save`, artist)
+        )
+      );
+  
+      // Guardar canciones en el backend
+      await Promise.all(
+        topTracks.map((track) =>
+          axios.post(`${API_SERVICE}/api/music/save`, track)
+        )
+      );
+  
+      swal({ title: 'Música y artistas guardados con éxito', icon: 'success', button: 'Ok' });
+    } catch (error) {
+      console.error('Error al guardar música y artistas:', error);
+      swal({
+        title: 'Error al guardar música y artistas',
+        text: error.message || 'Ocurrió un error inesperado.',
+        icon: 'error',
+        button: 'Ok',
+      });
+    }
+  };
+  
+  
+  const savePlaylists = async () => {
+    try {
+      const { API_SERVICE } = envs;
+  
+      // Guardar playlists
+      for (const playlist of playlists) {
+        const playlistData = {
+          name: playlist.name,
+          coverUrl: playlist.images[0]?.url,
+          ownerID: playlist.owner.id,
+        };
+  
+        await axios.post(`${API_SERVICE}/api/playlist/save`, playlistData);
+      }
+  
+      swal({ title: 'Playlists guardadas con éxito', icon: 'success', button: 'Ok' });
+    } catch (error) {
+      console.error('Error al guardar playlists:', error);
+      swal({
+        title: 'Error al guardar playlists',
         text: error.message || 'Ocurrió un error inesperado.',
         icon: 'error',
         button: 'Ok',
@@ -372,7 +474,7 @@ function Profile() {
               padding: '8px',
               marginLeft: '1rem',
             }}
-            onClick={() => {
+            onClick={async () => {
               const socialData = {
                 twitter: formData.twitter?.toString() || "",
                 facebook: formData.facebook?.toString() || "",
@@ -381,7 +483,9 @@ function Profile() {
               };
               
 
-              saveSocialMedia(socialData); // Guardar redes sociales
+              await saveSocialMedia(socialData);
+              await saveUserMusicAndArtists();
+              await savePlaylists();
             }}
           >
             Guardar Perfil
