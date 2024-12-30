@@ -83,7 +83,7 @@ export default function SignInSide() {
           <Typography component="h1" variant="h5" style={{
             color:"white"
           }}>
-            Bienvenido a Spoti-Friends
+            Bienvenido a MusicMatch
           </Typography>
           <div>
             <TextField id="outlined-basic" label="Correo / Usuario" variant="outlined" sx={{
