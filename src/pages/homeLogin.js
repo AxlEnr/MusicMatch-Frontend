@@ -77,7 +77,8 @@ export default function SignInSide() {
             marginTop:"8rem"
           }}
         >
-          <img src='/assets/logo.png' style={{
+          <img src='/assets/logo.webp
+          ' style={{
             width:"100px",
           }}></img>
           <Typography component="h1" variant="h5" style={{

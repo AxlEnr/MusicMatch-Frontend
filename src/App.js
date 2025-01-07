@@ -4,7 +4,7 @@ import SignInSide from '../src/pages/homeLogin';
 import Profile from './pages/Profile';
 import Showprofile from './pages/Showprofile';
 import Callback from './pages/callback';
-import Principal from './pages/principal';  // Importación añadida
+import Principal from './pages/principal'; 
 
 function App() {
   return (
@@ -16,7 +16,7 @@ function App() {
             <Route path="/callback" element={<Callback />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/showprofile" element={<Showprofile />} />
-            <Route path="/principal" element={<Principal />} />  {/* Nueva ruta */}
+            <Route path="/principal" element={<Principal />} />
           </Routes>
         </header>
       </div>

@@ -9,7 +9,7 @@ import {
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { envs } from '../config/envs';
-import swal from 'sweetalert';
+import Swal from 'sweetalert2'
 
 function Profile() {
   const [formData, setFormData] = useState({
@@ -67,28 +67,36 @@ function Profile() {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      const username = response.data.display_name || formData.username || 'Usuario';
-      const profileImage = response.data.images[0]?.url || formData.profileImg || '';
+      const username = response.data.display_name;
+      const profileImage = response.data.images[0]?.url;
 
       const updatedFormData = {
-        username,
-        email: formData.email || '',
+        username: username,
+        email: formData.email,
         profileImg: profileImage,
-        userPass: formData.userPass || '',
-        userDesc: formData.userDesc || '',
+        userPass: formData.userPass,
+        userDesc: formData.userDesc,
       };
 
-
-
       const { API_SERVICE } = envs;
-      const saveResponse = await axios.post(`${API_SERVICE}/api/profile/save`, updatedFormData);
-      // Guardar email en localStorage
-      localStorage.setItem('spotify_user_email', updatedFormData.email);
-      
-
+      console.log(updatedFormData);
+      const saveResponse = await axios.post(`${API_SERVICE}/api/stepone/post`, updatedFormData);
+      Swal.fire({
+        title: 'Bien!',
+        text: 'La información del usuario ha sido guardada',
+        icon: 'success',
+        confirmButtonText: 'Siguiente Paso',
+        confirmButtonColor: 'green'
+      });
     } catch (error) {
       console.error('Error al guardar el perfil:', error);
-      swal({ title: 'Error al guardar el perfil', icon: 'error', button: 'Ok' });
+      Swal.fire({
+        title: 'Error',
+        text: 'La información del usuario no pudo ser guardada',
+        icon: 'error',
+        confirmButtonText: 'Intentar de nuevo',
+        confirmButtonColor: 'green'
+      });
     }
   };
 
@@ -198,12 +206,6 @@ console.log('Payload enviado:', userMusicPreferencesPayload);
       
     } catch (error) {
       console.error('Error al crear los matches:', error.message);
-      swal({
-        title: 'Error al crear matches',
-        text: error.message || 'Ocurrió un error inesperado.',
-        icon: 'error',
-        button: 'Ok',
-      });
     }
   };
   
@@ -237,24 +239,9 @@ console.log('Payload enviado:', userMusicPreferencesPayload);
             ? axios.post(`${API_SERVICE}/api/links/save`, { platformName, profileLink, userID })
             : null
         )
-      );
-  
-      swal({
-        title: 'Perfil creado con éxito',
-        icon: 'success',
-        button: 'Ok',
-      }).then(() => {
-        navigate('/principal'); // Redirigir a la página deseada
-      });
-  
+      );  
     } catch (error) {
       console.error('Error al guardar las redes sociales:', error);
-      swal({
-        title: 'Error al guardar las redes sociales',
-        text: error.message || 'Ocurrió un error inesperado.',
-        icon: 'error',
-        button: 'Ok',
-      });
     }
   };
   
@@ -304,12 +291,6 @@ console.log('Payload enviado:', userMusicPreferencesPayload);
       
     } catch (error) {
       console.error('Error al guardar música y artistas:', error);
-      swal({
-        title: 'Error al guardar música y artistas',
-        text: error.message || 'Ocurrió un error inesperado.',
-        icon: 'error',
-        button: 'Ok',
-      });
     }
   };
   
@@ -332,12 +313,6 @@ console.log('Payload enviado:', userMusicPreferencesPayload);
       
     } catch (error) {
       console.error('Error al guardar playlists:', error);
-      swal({
-        title: 'Error al guardar playlists',
-        text: error.message || 'Ocurrió un error inesperado.',
-        icon: 'error',
-        button: 'Ok',
-      });
     }
   };
   
@@ -475,8 +450,8 @@ console.log('Payload enviado:', userMusicPreferencesPayload);
           </Button>
           <Button
             onClick={async () => {
-              await setUserInfo();
-              setCurrentNextStep('stepTwo');
+              await setUserInfo()
+              setCurrentNextStep('stepTwo'); 
             }}
             style={{
               backgroundColor: 'green',
